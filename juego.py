@@ -1,15 +1,29 @@
+#Import functions from another file
 from funciones import *
+
+#Character health
 hp_h = 100 
 hp_e = 120
-pociones = 3
+potions = 3
 
-while not ganador (hp_h, hp_e):
-    estado("Heroe", hp_h, 100, "Enemigo", hp_e, 120)
-    hp_e, pociones = turno_heroe(hp_h, hp_e, pociones)
-    hp_h = turno_enemigo(hp_h)
+hero_name = input("Enter your hero's name: ")
 
+hp_h_max = 100
+hp_e_max = 120
+enemy = "Enemy"
+
+print(f"\nWelcome, {hero_name}! The battle begins ⚔️")
+
+while not winner(hp_h, hp_e):
+    hp_e, hp_h, potions = hero_turn(hp_h, hp_e, potions, hp_h_max)
+
+    if winner(hp_h, hp_e):
+        break
+
+    hp_h = enemy_turn(hp_h)
+    status(hero_name, hp_h, hp_h_max, enemy, hp_e, hp_e_max, potions)
 
 if hp_h > 0:
-    print("¡Victoria!")
+    print("Victory!")
 else:    
-    print(" Game over...")
+    print("Game over...")

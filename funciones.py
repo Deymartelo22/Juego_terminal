@@ -1,51 +1,73 @@
-import random 
-def daño_(min,max):
-    daño = random.randint(min,max)
+import random
+
+turn_counter = 1
+
+def damage_(min_val, max_val):
+    damage = random.randint(min_val, max_val)
     if random.randint(1, 10) == 1:
-        daño = daño * 2
-    return daño
+        damage *= 2
+    return damage
 
-def estado (heroe, hp_h, hp_h_max, enemigo,hp_e, hp_e_max):
-    bloques_h = int((hp_h / hp_h_max) * 10)
-    vacios_h = 10 - bloques_h
-    print(f"{heroe}: [{'#' * bloques_h}{'-' * vacios_h}] {hp_h} hp")
+def status(hero, hp_h, hp_h_max, enemy, hp_e, hp_e_max, potions):
+    print("\n" + "="*40)
+    print(f"🧪 Potions: {potions}")
+    
+    hero_blocks = int((hp_h / hp_h_max) * 10)
+    print(f"{hero}: [{'#'*hero_blocks}{'-'*(10-hero_blocks)}] {hp_h}/{hp_h_max}")
 
-    bloques_e = int((hp_e / hp_e_max) * 10)
-    vacios_e = 10 - bloques_e
-    print(f"{enemigo}: [{'#' * bloques_e}{'-' * vacios_e}] {hp_e} hp")
+    enemy_blocks = int((hp_e / hp_e_max) * 10)
+    print(f"{enemy}: [{'#'*enemy_blocks}{'-'*(10-enemy_blocks)}] {hp_e}/{hp_e_max}")
+    print("="*40)
 
-def ganador (hp_h, hp_e):
+def winner(hp_h, hp_e):
     return hp_h <= 0 or hp_e <= 0
 
+def enemy_turn(hp_h):
+    print("\n👾 ENEMY TURN")
+    damage = damage_(15, 20)
+    hp_h = max(0, hp_h - damage)
+    print(f"The enemy attacks for {damage} damage!")
+    return hp_h - damage
 
-def turno_enemigo (hp_h):
-    daño = daño_(15, 20)
-    print(f"¡El enemigo ataca por {daño} de daño!") 
-    hp_h = hp_h - daño
-    return hp_h 
+def hero_turn(hp_h, hp_e, potions, hp_h_max):
+    global turn_counter
+    print(f"\n🔥 TURN {turn_counter}")
+    print("-"*30)
 
-def turno_heroe (hp_h, hp_e, pociones):
-    print("Elige que haras: (1)atacar, (2)curar, (3)habilidad especial")
-    opcion = input("Elegiste: ")
-    if opcion == "1":
-        daño = daño_(10,25) 
-        print(f"¡El heroe ataca por {daño} de daño!") 
-        hp_e = hp_e - daño
+    while True:
+        print("1) ⚔️ Attack")
+        print("2) ❤️ Heal")
+        print("3) 💥 Special ability")
 
-    elif opcion == "2":
-        if pociones > 0:
-            pociones = pociones -1
-            hp_h = hp_h + 20
-            print(f"¡El heroe se cura y recuera 20 hp!")
+        option = input("Choose an option: ")
+
+        if option == "1":
+            damage = damage_(10, 25)
+            print(f"\n⚔️ You dealt {damage} damage!")
+            hp_e = max(0, hp_e - damage)
+            break
+
+        elif option == "2":
+            if potions > 0:
+                potions -= 1
+                hp_h = min(hp_h_max, hp_h + 20)
+                print(f"\n❤️ You healed 20 HP")
+                print(f"🧪 Potions left: {potions}")
+                break
+            else:
+                print("\n❌ No potions left!")
+
+        elif option == "3":
+            if random.randint(1, 2) == 1:
+                damage = damage_(30, 50)
+                print(f"\n💥 Critical hit! {damage} damage!")
+            hp_e = max(0, hp_e - damage)
         else:
-            print("Sin pociones")
-            
-    elif opcion == "3":
-        if random.randint(1, 2) == 1:
-            daño = daño_(30,50)
-            hp_e = hp_e -daño 
-            print(f"¡La habilidad especial hace {daño} de daño!")
-        else:
-            print("¡La habilidad especial fallo!")
+                print("\n❌ Special ability failed!")
+        break
 
-    return hp_e, pociones
+    else:
+            print("\n⚠️ Invalid option")
+
+    turn_counter += 1
+    return hp_e, hp_h, potions
